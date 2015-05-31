@@ -194,6 +194,11 @@ public class Library extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {		
 		
+
+		//criação do gerenciador de fluxo da biblioteca
+		LibraryManager manager = new LibraryManager();
+		setLibraryManager(manager);
+		
 		/**
 		 * 
 		 * *********************************************************************************************************
@@ -832,11 +837,7 @@ public class Library extends Application{
 		
 		//Apresentação do Palco.
 		primaryStage.show();
-		
-		//execução do gerenciador de fluxo da biblioteca
-		LibraryManager manager = new LibraryManager();
-		setLibraryManager(manager);
-		new Thread (manager);
+			
 		
 	} // start ()
 	
