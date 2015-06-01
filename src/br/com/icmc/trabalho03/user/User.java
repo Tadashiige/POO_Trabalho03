@@ -2,6 +2,7 @@ package br.com.icmc.trabalho03.user;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 import br.com.icmc.trabalho03.BorrowRegister;
 import br.com.icmc.trabalho03.LibraryManager;
@@ -119,6 +120,8 @@ public abstract class User {
 	}
 	
 	public void suspensionCalculate (){
-	
+		
+		//TODO refazer
+		
 	}
 }

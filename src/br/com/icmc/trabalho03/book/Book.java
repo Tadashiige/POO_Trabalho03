@@ -6,7 +6,7 @@ import br.com.icmc.trabalho03.BorrowRegister;
 import br.com.icmc.trabalho03.LibraryManager;
 import br.com.icmc.trabalho03.user.User;
 
-public abstract class Book {
+public class Book {
 	private int ID;
 	private BookType type;
 	private String name;	
