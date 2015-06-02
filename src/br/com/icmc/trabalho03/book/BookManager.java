@@ -16,6 +16,8 @@ public class BookManager {
 	
 	public BookManager (){
 		//TODO
+		
+		bookList = new ArrayList<Book>();
 	}
 	
 	public void signupBook (BookType type, String name){
@@ -23,11 +25,14 @@ public class BookManager {
 		switch(type){
 			case General:
 				bookList.add(new Book(ID, type, name));
+				break;
 			case TextBook:
 				bookList.add(new TextBook(ID, type, name));
+				break;
 			default:
 				ID--;
 				//TODO popup message "Book type undefined";
+				break;
 		}
 	}
 	

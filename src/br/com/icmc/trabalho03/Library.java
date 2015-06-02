@@ -1,5 +1,7 @@
 package br.com.icmc.trabalho03;
 
+import br.com.icmc.trabalho03.user.User;
+import br.com.icmc.trabalho03.user.UserRelationship;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,6 +25,7 @@ public class Library extends Application{
 	public static final double WIDTH = 900.0;
 	public static final double HEIGHT = WIDTH*9/16;		
 	
+	private GuiLibraryIntegrator integrator = null;
 	private LibraryManager manager = null;
 	
 	private StackPane principalSection = null;
@@ -54,6 +57,10 @@ public class Library extends Application{
 	
 	private void setLibraryManager (LibraryManager manager){
 		this.manager = manager;
+	}
+	
+	private void setGuiLibraryIntegrator(GuiLibraryIntegrator integrator){
+		this.integrator = integrator;
 	}
 	
 	private void setPrincipalSection(StackPane principalSection){
@@ -118,6 +125,10 @@ public class Library extends Application{
 	
 	private LibraryManager getLibraryManager (){
 		return this.manager;
+	}
+	
+	private GuiLibraryIntegrator setGuiLibraryIntegrator(){
+		return this.integrator;
 	}
 	
 	private StackPane getPrincipalSection (){
@@ -191,31 +202,8 @@ public class Library extends Application{
 		getBanner().setText(label);
 	}
 	
-	@Override
-	public void start(Stage primaryStage) throws Exception {		
-		
+	private void buildBanner (VBox generalPageView){
 
-		//criação do gerenciador de fluxo da biblioteca
-		LibraryManager manager = new LibraryManager();
-		setLibraryManager(manager);
-		
-		/**
-		 * 
-		 * *********************************************************************************************************
-		 * 
-		 * Setup geral para a página principal.
-		 * A visão da aplicação terá um banner do software ao topo;
-		 * uma barra lateral contendo botões para acesso ao homepage, 
-		 * formulários/listas de cadastro de livros e usuários, 
-		 * registro de empréstimo e devolução de livros, cálculo 
-		 * de suspensões e listas de usuários, livros, e livros 
-		 * emprestados; e uma sessão de formulários/listas que
-		 * será trocado de acordo com a requisição do usuário
-		 * disparado pelos botões laterais.
-		 */
-		
-		VBox generalPageView = new VBox();
-		
 		//Criação do Banner
 		
 		Label banner = new Label ("Library v1.0");
@@ -225,19 +213,11 @@ public class Library extends Application{
 		banner.setTextFill(Color.BLUE);
 		banner.setFont(Font.font("Cambria", 32));
 		setBanner(banner);
+		
 		generalPageView.getChildren().add(banner);
-		
-		/**
-		 * CRIAÇÃO DA BARRA LATERAL **************************************************************************************
-		 * 
-		 * barra lateral e sessão principal deve ser disposto lado a lado
-		 */		
-		
-		HBox principalContent = new HBox ();
-		principalContent.setPrefHeight(HEIGHT*5/6);
-		generalPageView.getChildren().add(principalContent);
-		
-
+	}
+	
+	private void buildSideNav (HBox principalContent){
 		VBox sideNavigator = new VBox();
 		sideNavigator.setPrefWidth(WIDTH/6);
 		sideNavigator.setPrefHeight(HEIGHT*5/6);
@@ -249,30 +229,14 @@ public class Library extends Application{
 		Button homeButton = new Button ("Home");
 		homeButton.setPrefHeight(HEIGHT*5/30);
 		homeButton.setPrefWidth(WIDTH/6);
-		
+
 		Button signUpButton = new Button ("Sign Up");
 		signUpButton.setPrefHeight(HEIGHT*5/30);
 		signUpButton.setPrefWidth(WIDTH/6);
-
-		Button userSignUpButton = new Button ("User Sign Up");
-		userSignUpButton.setPrefHeight(HEIGHT*5/30);
-		userSignUpButton.setPrefWidth(WIDTH/6);
-		
-		Button bookSignUpButton = new Button ("Book Sign Up");
-		bookSignUpButton.setPrefHeight(HEIGHT*5/30);
-		bookSignUpButton.setPrefWidth(WIDTH/6);
 		
 		Button borrowReturnButton = new Button ("Borrow/Return");
 		borrowReturnButton.setPrefHeight(HEIGHT*5/30);
 		borrowReturnButton.setPrefWidth(WIDTH/6);
-
-		Button borrowButton = new Button ("Borrow");
-		borrowButton.setPrefHeight(HEIGHT*5/30);
-		borrowButton.setPrefWidth(WIDTH/6);
-
-		Button returnButton = new Button ("Return");
-		returnButton.setPrefHeight(HEIGHT*5/30);
-		returnButton.setPrefWidth(WIDTH/6);
 		
 		Button returnCalButton = new Button ("Return Cal");
 		returnCalButton.setPrefHeight(HEIGHT*5/30);
@@ -281,19 +245,7 @@ public class Library extends Application{
 		Button listButton = new Button ("List");
 		listButton.setPrefHeight(HEIGHT*5/30);
 		listButton.setPrefWidth(WIDTH/6);
-		
-		Button userListButton = new Button ("User List");
-		userListButton.setPrefHeight(HEIGHT*5/30);
-		userListButton.setPrefWidth(WIDTH/6);
 
-		Button bookListButton = new Button ("Book List");
-		bookListButton.setPrefHeight(HEIGHT*5/30);
-		bookListButton.setPrefWidth(WIDTH/6);
-		
-		Button borrowListButton = new Button ("Borrow List");
-		borrowListButton.setPrefHeight(HEIGHT*5/30);
-		borrowListButton.setPrefWidth(WIDTH/6);
-		
 		
 		/**
 		 * -------------------------------------- FIM CRIAÇÃO DOS BOTÕES ----------------------------------------------
@@ -301,6 +253,7 @@ public class Library extends Application{
 		
 		sideNavigator.getChildren().addAll(
 				homeButton,
+				//updateButton,
 				signUpButton,
 				//userSignUpButton,
 				//bookSignUpButton,
@@ -319,37 +272,35 @@ public class Library extends Application{
 		/**
 		 * -------------------------------------- FIM CRIAÇÃO DA BARRA LATERAL ---------------------------------------
 		 */
+
+
+		homeButton.setOnMouseClicked(event->{
+			tradeSectionPane(getHomePane(), "Library v1.0");
+		});
+
+		signUpButton.setOnMouseClicked(event->{
+			tradeSectionPane(getSignupPane(), "SignUp");
+		});
+				
+		borrowReturnButton.setOnMouseClicked(event->{
+			tradeSectionPane(getRegisterPane(), "Borrow and Return");
+		});
 		
-		//Criação da sessão que terá seu conteúdo trocado		
-		//de acordo com a requisição do usuário.
+		returnCalButton.setOnMouseClicked(event->{
+			tradeSectionPane(getReturnCalPane(), "Return Calculate");
+		});			
 		
-		StackPane principalSection = new StackPane ();
-		principalSection.setPrefWidth(WIDTH*5/6);
-		setPrincipalSection(principalSection);
-		principalContent.getChildren().add(principalSection);
-		
-		
-		//Criação da cena.
-		
-		Scene scn = new Scene (generalPageView, WIDTH, HEIGHT, Color.BLUE);
-		primaryStage.setScene(scn);
-		
-		
-		/** ---------------- FIM SETUP GENÉRICO --------------------------------------------------------------
-		*
-		*/
-		
-		/**
-		 * 
-		 * **************************************************************************************************
-		 * 
-		 * Setup das sessões específicas de requisão por botão do usuário:
-		 * 1 - Home Page
-		 * 2 - Cadastro de usuário e livros
-		 * 3 - Registro de empréstimo e devolução
-		 * 4 - Cálculo de suspensão de usuário
-		 * 5 - Listagem de usuários, livros e livros impressos
-		 */
+		listButton.setOnMouseClicked(event->{
+			tradeSectionPane(getListPane(), "List");
+		});		
+
+	}
+	
+	private void buildHomepage (){
+
+		Button updateButton = new Button("update Time");
+		updateButton.setPrefHeight(HEIGHT*5/30);
+		updateButton.setPrefWidth(WIDTH/6);
 		
 		//variáveis auxiliares
 		VBox auxVBox = null;
@@ -358,10 +309,43 @@ public class Library extends Application{
 		//Home Page
 		
 		setHomePane(new StackPane());
-		Label wellcome = new Label ("Wellcome !!");
-		getHomePane().getChildren().add(wellcome);		
-				
+		auxVBox = new VBox();		
+		auxHBox = new HBox();
+		Label dateFormat = new Label ("DD/MM/AAAA");
+		TextField day = new TextField();
+		day.setPrefWidth(WIDTH*5/48);
+		TextField month = new TextField();
+		month.setPrefWidth(WIDTH*5/48);
+		TextField year = new TextField();
+		year.setPrefWidth(WIDTH*5/48);
+		auxHBox.getChildren().addAll(day, month, year);
+		Label systemTime = new Label (
+				LibraryManager.systemDate.getDate()+"/"+
+				(LibraryManager.systemDate.getMonth()+1) +"/"+
+				(LibraryManager.systemDate.getYear()+1900));		
+		integrator.setActualTime(systemTime);
+		auxVBox.getChildren().addAll(systemTime, dateFormat, auxHBox, updateButton);
+		getHomePane().getChildren().addAll(auxVBox);		
 		
+		updateButton.setOnMouseClicked(event ->{
+			integrator.updateTime(year.getText()+"/"+month.getText()+"/"+day.getText());
+		});
+	}
+
+	private void buildSignupPage (){
+				
+		Button userSignUpButton = new Button ("User Sign Up");
+		userSignUpButton.setPrefHeight(HEIGHT*5/30);
+		userSignUpButton.setPrefWidth(WIDTH/6);
+		
+		Button bookSignUpButton = new Button ("Book Sign Up");
+		bookSignUpButton.setPrefHeight(HEIGHT*5/30);
+		bookSignUpButton.setPrefWidth(WIDTH/6);
+
+		
+		VBox auxVBox = null;
+		HBox auxHBox = null;
+
 		//Cadastro de usuários e livros		
 		
 		setSignupPane(new StackPane());		
@@ -381,8 +365,21 @@ public class Library extends Application{
 		bookSignUpButton.setTranslateX(WIDTH/3);
 		auxHBox.setPrefHeight(HEIGHT*5/9);
 		getSignupPane().getChildren().add(auxVBox);
-		auxVBox = null;
-		auxHBox = null;
+
+		userSignUpButton.setOnMouseClicked(event->{
+			tradeSectionPane(getUserSignupPane(), "User SignUp");			
+		});
+
+		bookSignUpButton.setOnMouseClicked(event->{
+			tradeSectionPane(getBookSignupPane(), "Book SignUp");
+		});
+
+	}
+	
+	private void buildUserSignupPage (){
+
+		VBox auxVBox = null;
+		HBox auxHBox = null;
 				
 		//Cadastro de usuários
 		
@@ -402,7 +399,7 @@ public class Library extends Application{
 		auxHBox = new HBox();
 		Label relationListLabel = new Label("Vínculo com a Universidade: ");
 		ObservableList<String> relationship = FXCollections.observableArrayList(
-				"aluno", "professor", "comunidade");
+				"University", "Teacher", "Community");
 		ComboBox relationList = new ComboBox(relationship);
 		auxHBox.getChildren().addAll(relationListLabel, relationList);		
 		auxVBox.getChildren().add(auxHBox);
@@ -417,6 +414,21 @@ public class Library extends Application{
 		auxVBox.getChildren().add(sendSignUpButton);
 		
 		getUserSignupPane().getChildren().add(auxVBox);		
+				
+		sendSignUpButton.setOnMouseClicked(event ->{			
+			integrator.signUpUser(
+					userName.getText(),
+					UserRelationship.valueOf(relationList.getValue().toString()), 
+					Integer.parseInt(documentNumb.getText())
+				);
+		});
+
+	}
+	
+	private void buildBookSignupPage (){
+
+		VBox auxVBox = null;
+		HBox auxHBox = null;
 		
 		//Cadastro de livros
 
@@ -446,7 +458,25 @@ public class Library extends Application{
 		
 		getBookSignupPane().getChildren().add(auxVBox);		
 
-				
+		sendBookSignUpButton.setOnMouseClicked(event ->{
+			
+		});
+
+	}
+	
+	private void buildBorrowReturnPage (){
+
+		Button borrowButton = new Button ("Borrow");
+		borrowButton.setPrefHeight(HEIGHT*5/30);
+		borrowButton.setPrefWidth(WIDTH/6);
+
+		Button returnButton = new Button ("Return");
+		returnButton.setPrefHeight(HEIGHT*5/30);
+		returnButton.setPrefWidth(WIDTH/6);
+
+		VBox auxVBox = new VBox();
+		HBox auxHBox = new HBox();
+		
 		//Registro de empréstimo/devolução
 		
 		setRegisterPane(new StackPane());		
@@ -468,15 +498,27 @@ public class Library extends Application{
 		getRegisterPane().getChildren().add(auxVBox);		
 		auxVBox = null;
 		auxHBox = null;
+
+		borrowButton.setOnMouseClicked(event->{
+			tradeSectionPane(getBorrowPane(), "Borrow");
+		});
+
+		returnButton.setOnMouseClicked(event->{
+			tradeSectionPane(getReturnPane(), "Return");
+		});
+
+	}
+	
+	private void buildBorrowPage(){
+		
+		VBox auxVBox = new VBox();
+		HBox auxHBox = new HBox();
 		
 		//Registro de Emprestimo
 		
 		setBorrowPane(new StackPane());
 		
 		HBox hboxSide = new HBox ();
-		
-		auxVBox = new VBox();
-		auxHBox = new HBox();
 		
 		auxVBox.setPrefHeight(HEIGHT*5/6);
 		auxVBox.setPrefHeight(WIDTH*5/6);
@@ -543,6 +585,26 @@ public class Library extends Application{
 		hboxSide.getChildren().add(auxVBox);
 		
 		getBorrowPane().getChildren().add(hboxSide);		
+
+
+		searchUser.setOnMouseClicked(event->{
+			integrator.showUserList();
+		});
+		
+		bookSearchButton.setOnMouseClicked(event->{
+			
+		});
+		
+		bookBorrowButton.setOnMouseClicked(event->{
+			
+		});
+		
+	}
+
+	private void buildReturnPage(){
+
+		VBox auxVBox = new VBox();
+		HBox auxHBox = new HBox();
 		
 		//Registro de devolução
 		
@@ -550,26 +612,27 @@ public class Library extends Application{
 		
 		auxVBox = new VBox();
 		auxHBox = new HBox();
-		
+			
 		auxVBox.setPrefHeight(HEIGHT*5/6);
 		auxVBox.setPrefHeight(WIDTH*5/6);
 		auxVBox.setAlignment(Pos.CENTER);		
 		
-		idUserLabel = new Label("NºUSP/RG: ");		
-		idUser = new TextField();
+		Label idUserLabel = new Label("NºUSP/RG: ");		
+		TextField idUser = new TextField();
 		auxHBox.getChildren().addAll(idUserLabel, idUser);
 		auxVBox.getChildren().add(auxHBox);
 		
-		searchUser = new Button ("Buscar Usuário");
+		Button searchUser = new Button ("Buscar Usuário");
 		auxVBox.getChildren().add(searchUser);
 		
-		userListBook = FXCollections.observableArrayList();
-		userBookListView = new ListView<String>(userListBook);			
-		auxVBox.getChildren().add(userBookListView);					
+		ObservableList<BorrowRegister>  userListBook = FXCollections.observableArrayList();
+		ListView<BorrowRegister> userBookListView = new ListView<BorrowRegister>(userListBook);			
+		auxVBox.getChildren().add(userBookListView);
+		integrator.setUserBorrowList(userBookListView);
 		
 		auxHBox = new HBox();
-		borrowBookId = new Label ("ID: ");
-		borrowBookName = new Label ("Name: ");
+		Label borrowBookId = new Label ("ID: ");
+		Label borrowBookName = new Label ("Name: ");
 		borrowBookId.setAlignment(Pos.CENTER);
 		borrowBookId.setTextFill(Color.GREEN);
 		borrowBookId.setFont(Font.font("Cambria", 16));
@@ -584,6 +647,21 @@ public class Library extends Application{
 		auxVBox.getChildren().add(auxHBox);			
 		
 		getReturnPane().getChildren().add(auxVBox);						
+
+		searchUser.setOnMouseClicked(event->{
+			integrator.showUserBorrowList();
+		});
+		
+		bookReturnButton.setOnMouseClicked(event->{
+			
+		});
+		
+	}
+	
+	private void buildSuspensionPage (){
+
+		HBox auxHBox = new HBox();
+		VBox auxVBox = new VBox();
 		
 		//Cálculo de suspensão
 		
@@ -595,16 +673,16 @@ public class Library extends Application{
 		auxVBox.setPrefHeight(WIDTH*5/6);
 		auxVBox.setAlignment(Pos.CENTER);		
 		
-		idUserLabel = new Label("NºUSP/RG: ");		
-		idUser = new TextField();
+		Label idUserLabel = new Label("NºUSP/RG: ");		
+		TextField idUser = new TextField();
 		auxHBox.getChildren().addAll(idUserLabel, idUser);
 		auxVBox.getChildren().add(auxHBox);
 		
-		searchUser = new Button ("Buscar Usuário");
+		Button searchUser = new Button ("Buscar Usuário");
 		auxVBox.getChildren().add(searchUser);
 		
-		userListBook = FXCollections.observableArrayList();
-		userBookListView = new ListView<String>(userListBook);			
+		ObservableList<String>  userListBook = FXCollections.observableArrayList();
+		ListView<String> userBookListView = new ListView<String>(userListBook);			
 		auxVBox.getChildren().add(userBookListView);					
 		
 		auxHBox = new HBox();
@@ -617,6 +695,26 @@ public class Library extends Application{
 		auxVBox.getChildren().add(auxHBox);
 		
 		getReturnCalPane().getChildren().add(auxVBox);
+		
+	}
+	
+	private void buildListPage (){
+
+		Button userListButton = new Button ("User List");
+		userListButton.setPrefHeight(HEIGHT*5/30);
+		userListButton.setPrefWidth(WIDTH/6);
+
+		Button bookListButton = new Button ("Book List");
+		bookListButton.setPrefHeight(HEIGHT*5/30);
+		bookListButton.setPrefWidth(WIDTH/6);
+		
+		Button borrowListButton = new Button ("Borrow List");
+		borrowListButton.setPrefHeight(HEIGHT*5/30);
+		borrowListButton.setPrefWidth(WIDTH/6);
+		
+
+		HBox auxHBox = new HBox();
+		VBox auxVBox = new VBox();		
 		
 		//Listagem
 		
@@ -642,6 +740,25 @@ public class Library extends Application{
 		auxVBox = null;
 		auxHBox = null;
 
+		userListButton.setOnMouseClicked(event->{
+			tradeSectionPane(getUserListPane(), "User List");
+		});		
+
+		bookListButton.setOnMouseClicked(event->{
+			tradeSectionPane(getBookListPane(), "Book List");
+		});		
+
+		borrowListButton.setOnMouseClicked(event->{
+			tradeSectionPane(getBorrowListPane(), "Borrow List");
+		});		
+
+	}
+
+	private void buildUserListPage (){
+		
+		HBox auxHBox = new HBox();
+		VBox auxVBox = new VBox();
+		
 		//Listagem de Usuários
 		
 		setUserListPane(new StackPane());
@@ -653,20 +770,31 @@ public class Library extends Application{
 		auxVBox.setPrefHeight(WIDTH*5/6);
 		auxVBox.setAlignment(Pos.CENTER);		
 		
-		idUserLabel = new Label("NºUSP/RG: ");		
-		idUser = new TextField();
+		Label idUserLabel = new Label("NºUSP/RG: ");		
+		TextField idUser = new TextField();
 		auxHBox.getChildren().addAll(idUserLabel, idUser);
 		auxVBox.getChildren().add(auxHBox);
 		
-		searchUser = new Button ("Buscar Usuário");
+		Button searchUser = new Button ("Buscar Usuário");
 		auxVBox.getChildren().add(searchUser);
 		
-		ObservableList<String> userList = FXCollections.observableArrayList();
-		ListView<String> userListView = new ListView<String>(userList);
+		ObservableList<User> userList = FXCollections.observableArrayList();
+		ListView<User> userListView = new ListView<User>(userList);
+		integrator.setUserList(userListView);
 		
 		auxVBox.getChildren().add(userListView);
 		
 		getUserListPane().getChildren().add(auxVBox);
+		
+		searchUser.setOnMouseClicked(event->{
+			integrator.showUserList();
+		});
+	}
+
+	private void buildBookListPage (){
+		
+		HBox auxHBox = new HBox();
+		VBox auxVBox = new VBox();
 
 		//Listagem de Livros
 		
@@ -699,6 +827,18 @@ public class Library extends Application{
 		auxVBox.getChildren().add(bookListView);
 		
 		getBookListPane().getChildren().add(auxVBox);
+
+
+		searchBook.setOnMouseClicked(event->{
+			
+		});
+		
+	}
+
+	private void buildBorrowListPage (){
+		
+		HBox auxHBox = new HBox();
+		VBox auxVBox = new VBox();
 		
 		//Listagem de Livros emprestados
 		
@@ -722,118 +862,124 @@ public class Library extends Application{
 		auxHBox.getChildren().addAll(idBorrowedBookNameLabel, nameBorrowedBook);
 		auxVBox.getChildren().add(auxHBox);
 		
-		searchBook = new Button ("Buscar Livro");
+		Button searchBook = new Button ("Buscar Livro");
 		auxVBox.getChildren().add(searchBook);
 		
-		bookList = FXCollections.observableArrayList();
-		bookListView = new ListView<String>(bookList);
+		ObservableList<String> bookList = FXCollections.observableArrayList();
+		ListView<String> bookListView = new ListView<String>(bookList);
 		
 		auxVBox.getChildren().add(bookListView);
 		
 		getBorrowListPane().getChildren().add(auxVBox);		
 		
-		/** ********************************************************************************************************
-		 * Configuração da ações dos botões de troca de Pane
-		 */
-
-		homeButton.setOnMouseClicked(event->{
-			tradeSectionPane(getHomePane(), "Library v1.0");
-		});
-
-		signUpButton.setOnMouseClicked(event->{
-			tradeSectionPane(getSignupPane(), "SignUp");
-		});
-		
-
-		userSignUpButton.setOnMouseClicked(event->{
-			tradeSectionPane(getUserSignupPane(), "User SignUp");
-		});
-
-		bookSignUpButton.setOnMouseClicked(event->{
-			tradeSectionPane(getBookSignupPane(), "Book SignUp");
-		});
-		
-		borrowReturnButton.setOnMouseClicked(event->{
-			tradeSectionPane(getRegisterPane(), "Borrow and Return");
-		});
-
-		borrowButton.setOnMouseClicked(event->{
-			tradeSectionPane(getBorrowPane(), "Borrow");
-		});
-
-		returnButton.setOnMouseClicked(event->{
-			tradeSectionPane(getReturnPane(), "Return");
-		});
-		
-		returnCalButton.setOnMouseClicked(event->{
-			tradeSectionPane(getReturnCalPane(), "Return Calculate");
-		});			
-		
-		listButton.setOnMouseClicked(event->{
-			tradeSectionPane(getListPane(), "List");
-		});		
-
-		userListButton.setOnMouseClicked(event->{
-			tradeSectionPane(getUserListPane(), "User List");
-		});		
-
-		bookListButton.setOnMouseClicked(event->{
-			tradeSectionPane(getBookListPane(), "Book List");
-		});		
-
-		borrowListButton.setOnMouseClicked(event->{
-			tradeSectionPane(getBorrowListPane(), "Borrow List");
-		});		
-		
-		/**
-		 *  ------------------------------------ END CONFIG BUTTON TRADE PANE ------------------------------------
-		 */
-		
-		
-		/**
-		 *  Configuração das funções do sistema biblioteca *******************************************************
-		 */
-		sendSignUpButton.setOnMouseClicked(event ->{
-			
-		});
-
-		sendBookSignUpButton.setOnMouseClicked(event ->{
-			
-		});
 		
 		searchBook.setOnMouseClicked(event->{
 			
 		});
+	}
+	
+	/**
+	 * A forma adotada para GUI é ter todas as panes criadas e guardadas em memória e segundo
+	 * as requisições por botão, a pane mostrada é trocada pela requerida.
+	 */
+	@Override
+	public void start(Stage primaryStage) throws Exception {		
+
+		//criação do gerenciador de fluxo da biblioteca
+		LibraryManager manager = new LibraryManager();
+		setLibraryManager(manager);
 		
-		searchUser.setOnMouseClicked(event->{
-			
-		});
+		//criação do integrador da GUI com o gerenciador da biblioteca
+		GuiLibraryIntegrator integrator = new GuiLibraryIntegrator(manager);
+		setGuiLibraryIntegrator(integrator);
 		
-		bookSearchButton.setOnMouseClicked(event->{
-			
-		});
+	/**
+	 * CRIAÇÃO DAS PANES ORGANIZADORAS DA GUI ***************************************************************
+	 */
 		
-		bookReturnButton.setOnMouseClicked(event->{
-			
-		});
-		
-		bookBorrowButton.setOnMouseClicked(event->{
-			
-		});
-		
-		/**
-		 *  ----------------------- END LIBRARY FUNCTION BUTTON CONFIG ---------------------------------------------------
+		//Pane principal da GUI
+		VBox generalPageView = new VBox();
+
+		//Pane para dispor lado a lado a barra lateral com a sessão principal
+		HBox principalContent = new HBox ();
+		principalContent.setPrefHeight(HEIGHT*5/6);			
+
+		/*
+		 * **************************** Fim criação das panes organizadoras da gui ******************************
 		 */
+	
+	/**
+	 * CRIAÇÃO DO BANNER *************************************************************************************
+	 */		
+				
+		buildBanner(generalPageView);		
+		
+		/*
+		 *  ******************************* Fim criação do Banner ************************************************
+		 */
+	
+	/**
+	 * CRIAÇÃO DA BARRA LATERAL ******************************************************************************* 
+	 */		
+		
+		//criação da barra lateral
+		buildSideNav(principalContent);
+
+		/* 
+		* ******************************** Fim criação da barra lateral ******************************************
+		*/
+	
+	/**
+	 * CRIAÇÃO DA SESSÃO PRINCIPAL DE CONTÚDO ****************************************************************
+	 */
+	
+		//Criação da sessão que terá seu conteúdo trocado de acordo com a requisição do usuário.
+		StackPane principalSection = new StackPane ();
+		principalSection.setPrefWidth(WIDTH*5/6);
+		setPrincipalSection(principalSection);
+		principalContent.getChildren().add(principalSection);			
+		
+		/*
+		 * ********************** Fim criação principal da sessão principal de conteúdo **************************
+		 */
+		
+	/**
+	 * *************************** Criação das Panes **************************************************
+	 */
+
+		buildHomepage();
+		buildSignupPage();
+		
+		buildUserSignupPage();
+		buildBookSignupPage();
+		
+		buildBorrowReturnPage();				
+		
+		buildBorrowPage();
+		buildReturnPage();
+	
+		buildSuspensionPage();
+		
+		buildListPage();
+		
+		buildUserListPage();
+		buildBookListPage();
+		buildBorrowListPage();
+		
+		/*
+		 * ********************************* Fim criação das Panes ***********************************************
+		 */
+		
+		generalPageView.getChildren().add(principalContent);
+		
+		//Criação da cena.		
+		Scene scn = new Scene (generalPageView, WIDTH, HEIGHT, Color.BLUE);
+		primaryStage.setScene(scn);		
 		
 		//por default sessão principal terá o homepage como conteúdo
 		Rectangle background = new Rectangle (WIDTH*5/6, HEIGHT*5/6, Color.WHITE);		
 		principalSection.getChildren().add(background);
-		principalSection.getChildren().add(getHomePane());
-		
-		
-		/**
-		 *  ------------------ FIM DO SETUP ESPECÍFICO DE SESSÕES ----------------------------------------------
-		 */
+		principalSection.getChildren().add(getHomePane());		
 		
 		//Apresentação do Palco.
 		primaryStage.show();

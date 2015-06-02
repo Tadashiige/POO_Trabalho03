@@ -11,7 +11,7 @@ import br.com.icmc.trabalho03.user.UserManager;
 import br.com.icmc.trabalho03.user.UserRelationship;
 
 public class LibraryManager{
-	public static Date systemDate;
+	public static Date systemDate = new Date();
 	private UserManager userManager;
 	private BookManager bookManager;
 	
@@ -20,11 +20,21 @@ public class LibraryManager{
 		this.bookManager = new BookManager();
 	}
 	
-	public void userSingup (int ID, UserRelationship type, String name, int document){
+	public String timeSetup (String time){
+		Date newDate = new Date(time);
+		
+		systemDate = newDate;
+		
+		return newDate.getDate()+"/"+
+			(newDate.getMonth()+1) +"/"+
+			(newDate.getYear()+1900);
+	}
+	
+	public void userSignup (UserRelationship type, String name, int document){
 		userManager.signupUser(type, name, document);
 	}
 	
-	public void bookSingup (int ID, BookType type, String name){
+	public void bookSignup (BookType type, String name){
 		bookManager.signupBook(type, name);
 	}
 	
@@ -59,14 +69,5 @@ public class LibraryManager{
 	public ArrayList<Book> borrowedList (){
 		return bookManager.getBorrowedList ();
 	}
-	/**
-	 * Funções:
-	 * 
-	 * List: 
-	 * 		User.list
-	 * 		Book.list
-	 * 		Book.Borrowed.list
-	 *
-	 */
 
 }

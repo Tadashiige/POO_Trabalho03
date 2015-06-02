@@ -14,8 +14,9 @@ public class UserManager {
 	private static int ID = 0;
 	private ArrayList<User> userList;
 	
-	public UserManager (){
-		//TODO
+	public UserManager (){				
+		userList = UserFile.loadFile();
+		ID = UserParser.lastID;
 	}
 	
 	public void signupUser (UserRelationship type, String name, int document){
@@ -23,14 +24,19 @@ public class UserManager {
 		switch(type){
 			case Teacher:
 				userList.add(new Teacher(ID, type, name, document));
+				break;
 			case University:
 				userList.add(new University(ID, type, name, document));
+				break;
 			case Community:
 				userList.add(new Community(ID, type, name, document));
+				break;
 			default:
 				ID--;
 				//TODO popup message "Relationship type undefined";
+				break;
 		}
+		UserFile.writeFile(userList);		
 	}
 	
 	public void borrowUser (int ID, Book book){
