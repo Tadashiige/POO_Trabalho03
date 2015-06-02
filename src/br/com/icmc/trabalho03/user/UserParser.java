@@ -1,9 +1,14 @@
 package br.com.icmc.trabalho03.user;
 
+import java.util.ArrayList;
+
+import br.com.icmc.trabalho03.BorrowParser;
+import br.com.icmc.trabalho03.BorrowRegister;
+
 public class UserParser {
 	public static int lastID = 0;
 	
-	public static User parse(String csv){		
+	public static User parse(String csv, String cmd){		
 		String[] csvSplit = csv.split(",");
 		
 		int ID = Integer.parseInt(csvSplit[0]);
@@ -27,7 +32,24 @@ public class UserParser {
 				user = null;
 				break;
 		}
+		
+		BorrowParser.lastUserID = 0;
+		
+		
+		ArrayList<BorrowRegister> bookList = new ArrayList<BorrowRegister>(); 
+		
+		if(cmd != null && csvSplit.length > 4){			
+			for(String borrow : csvSplit[4].split(";")){								
+				bookList.add(BorrowParser.parseUser(borrow));
+			}
+		}
+			
+		user.setBorrowList(bookList);
+		
+		
 		lastID = ID;
+		user.borrowID = BorrowParser.lastUserID;
+		
 		return user;
 	}
 }

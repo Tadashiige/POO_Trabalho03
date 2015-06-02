@@ -1,7 +1,8 @@
 package br.com.icmc.trabalho03;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import br.com.icmc.trabalho03.book.Book;
 import br.com.icmc.trabalho03.book.BookType;
@@ -30,7 +31,7 @@ public class GuiLibraryIntegrator {
 	
 	private ListView<User> userList = null;
 	private ListView<Book> bookList = null;
-	private ListView<Book> borrowList = null;
+	private ListView<BorrowRegister> borrowList = null;
 	
 	/*
 	 * ----------------- END GUI FIELDS ----------------------------------- 
@@ -71,7 +72,7 @@ public class GuiLibraryIntegrator {
 	public void setBookList(ListView<Book> list){
 		this.bookList = list;
 	}
-	public void setBorrowList(ListView<Book> list){
+	public void setBorrowList(ListView<BorrowRegister> list){
 		this.borrowList = list;
 	}	
 	
@@ -109,7 +110,7 @@ public class GuiLibraryIntegrator {
 	public ListView<Book> getBookList(){
 		return this.bookList;
 	}
-	public ListView<Book> getBorrowList(){
+	public ListView<BorrowRegister> getBorrowList(){
 		return this.borrowList;
 	}	
 	
@@ -117,36 +118,77 @@ public class GuiLibraryIntegrator {
 	 * ----------------- END SETS -----------------------------------------------
 	 */
 	
-	public void updateTime (String date){
+	public User findUser (String doc){		
+		return manager.findUser(doc);				
+	}
+
+	public ObservableList<BorrowRegister> getUserBorrowList (User user){
+		ArrayList<BorrowRegister> list;
+		System.out.println("user: "+user + user.getBorrowList());
+		if(user != null)
+			list = user.getBorrowList();
+		else
+			list = new ArrayList<BorrowRegister>();
+		return FXCollections.observableArrayList(list);
+	}
+	
+	public ObservableList<User> matchUser (String doc){				
+		ArrayList<User> list = manager.matchUser(doc);		
 		
-		String newDate = manager.timeSetup(date);
-		this.actualTime.setText(newDate);
+		if(list.isEmpty())
+			list.addAll(manager.getUserList());			
+		
+		return FXCollections.observableArrayList(list);
+	}
+	
+	public ObservableList<Book> findBook (String ID, String name){
+		ArrayList<Book> bookID = manager.matchBookID(ID);
+		ArrayList<Book> bookName = manager.matchBookName(name);
+		Set<Book> list = new HashSet<Book>();
+		list.addAll(bookID);
+		list.addAll(bookName);							
+		
+		if(list.isEmpty())
+			list.addAll(manager.getBookList());
+		
+		return FXCollections.observableArrayList(list);
+	}
+	
+	public String updateTime (String date){
+		
+		return manager.timeSetup(date);
 	}
 	
 	public void signUpUser (String name, UserRelationship type, int document){		
 		manager.userSignup(type, name, document);
 	}
 	
-	public void signUpBook (String name, String typeBook){
-		BookType type;
-		if(typeBook == "TextBook")
-			type = BookType.TextBook;
-		else 
-			type = BookType.General;
-		
+	public void signUpBook (String name, BookType type){				
 		manager.bookSignup(type, name);
 	}
 
-	public void showUserBorrowList (){		
+	
 
+	public void borrowBook (User user, Book book){
+		manager.userBorrow(user, book);
 	}
 	
-	public void showUserList (){		
+	public ObservableList<User> showUserList (){		
 		ArrayList<User> list = manager.userList();		
 		
-		ObservableList<User> userList = FXCollections.observableArrayList(list);
+		 return FXCollections.observableArrayList(list);
+	}
+	
+	public ObservableList<Book> showBookList (){
+		ArrayList<Book> list = manager.bookList();
 		
-		this.userList.setItems(userList);
+		return FXCollections.observableArrayList(list);
+	}
+	
+	public ObservableList<Book> showBorrowList (){
+		ArrayList<Book> list = manager.borrowedList();
+		
+		return FXCollections.observableArrayList(list);
 	}
 	/**
 	 * Manipular listas para apresentação nos paineis, campos e etc

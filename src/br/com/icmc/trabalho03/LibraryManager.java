@@ -20,6 +20,26 @@ public class LibraryManager{
 		this.bookManager = new BookManager();
 	}
 	
+	public ArrayList<User> getUserList(){ 
+		return userManager.getUserList();
+	}
+	
+	public ArrayList<Book> getBookList(){
+		return bookManager.getBookList();
+	}
+	
+	public User findUser (String doc){
+		return userManager.findUser(doc);
+	}
+	
+	public ArrayList<Book> matchBookID (String ID){
+		return bookManager.matchBookId(ID);
+	}
+
+	public ArrayList<Book> matchBookName (String name){
+		return bookManager.matchBookName(name);
+	}
+	
 	public String timeSetup (String time){
 		Date newDate = new Date(time);
 		
@@ -30,6 +50,10 @@ public class LibraryManager{
 			(newDate.getYear()+1900);
 	}
 	
+	public ArrayList<User> matchUser (String doc){
+		return userManager.matchUser(doc);
+	}
+	
 	public void userSignup (UserRelationship type, String name, int document){
 		userManager.signupUser(type, name, document);
 	}
@@ -38,12 +62,9 @@ public class LibraryManager{
 		bookManager.signupBook(type, name);
 	}
 	
-	public void userBorrow (int ID, Book book){
-		userManager.borrowUser(ID, book);
-	}
-	
-	public void BookBorrow (int ID, User user){
-		bookManager.borrowIt(ID, user);
+	public void userBorrow (User user, Book book){
+		userManager.borrowUser(user.getID(), book);
+		bookManager.borrowIt(book.getID(), user);
 	}
 	
 	public void userReturn (int userID, int bookID){

@@ -1,10 +1,13 @@
 package br.com.icmc.trabalho03.user;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 import br.com.icmc.trabalho03.BorrowRegister;
 import br.com.icmc.trabalho03.book.Book;
 
 public abstract class User {
+	public int borrowID = 0;
 	private int ID;
 	private UserRelationship type;
 	private String name;
@@ -19,14 +22,17 @@ public abstract class User {
 		this.ID = ID;
 		this.type = type;
 		this.name = name;
-		this.document = document;
-		this.borrowList = new ArrayList<BorrowRegister>();
+		this.document = document;		
 	}
 
 	/**
 	 * Funções Set dos atributos ************************************************************
 	 * @return
 	 */	
+	
+	public void setBorrowList (ArrayList<BorrowRegister> borrowList){
+		this.borrowList = borrowList;
+	}
 	
 	public void setReturnTime (int time){
 		this.returnTime = time;
@@ -88,11 +94,18 @@ public abstract class User {
 	
 	public void borrowBook (Book book){
 		
+		if(borrowList == null){
+			this.borrowList = new ArrayList<BorrowRegister>();
+		}
+		
 		//Caso não tenha excedido o limite de empréstimos registrar emprestimo
 		
 		if(canBorrow(book)){
-			BorrowRegister newBorrow = new BorrowRegister(book);
-			borrowList.add(newBorrow);
+		
+			System.out.println(this.toString() + book);
+			borrowID++;
+			BorrowRegister newBorrow = new BorrowRegister(borrowID, book);
+			borrowList.add(newBorrow);			
 			borrowedBooks++;
 		}
 		
@@ -128,6 +141,17 @@ public abstract class User {
 		csvFormat += this.type + ",";
 		csvFormat += this.name + ",";
 		csvFormat += this.document;
+		
+		return csvFormat;
+	}
+	
+	public String toWrite(){
+		String csvFormat = toString();
+		
+		csvFormat += borrowList
+				.stream()
+				.map(borrow -> borrow.toString())
+				.collect(Collectors.joining(";"));
 		
 		return csvFormat;
 	}

@@ -1,4 +1,4 @@
-package br.com.icmc.trabalho03.user;
+package br.com.icmc.trabalho03.book;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -8,30 +8,30 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class UserFile {
-	final static private String fileName = "userData.csv";
+public class BookFile {
+	final static private String fileName = "bookData.csv";
 	
-	public UserFile(){		
+	public BookFile(){		
 	}
 	
 	
-	private static ArrayList<User> readFile (BufferedReader in){		
+	private static ArrayList<Book> readFile (BufferedReader in){		
 		
-		ArrayList<User> userList = new ArrayList<User>();
+		ArrayList<Book> bookList = new ArrayList<Book>();
     	String csv;
         try {
 			while((csv = in.readLine()) != null) {
-			    userList.add(UserParser.parse(csv, "parse"));
+			    bookList.add(BookParser.parse(csv, "parse"));
 			}
 			in.close();
 		} catch (IOException e) {
 			System.out.println("Error reading the file!");
 		}
-        return userList;
+        return bookList;
 	}
 	
-	//le a coleção de usuários do arquivo
-	public static ArrayList<User> loadFile (){		
+	//le a coleção de book do arquivo
+	public static ArrayList<Book> loadFile (){		
 		 
 		BufferedReader in = null;
 		
@@ -54,13 +54,13 @@ public class UserFile {
 	}
 	
 	
-	//salva coleção de usuários no arquivo
-	public static void writeFile (ArrayList<User> userList){
+	//salva coleção de book no arquivo
+	public static void writeFile (ArrayList<Book> bookList){
 		try {
 			PrintWriter out = new PrintWriter(new FileWriter(fileName));
-			userList
+			bookList
 				.stream()
-				.forEach(user -> out.println(user.toWrite()));
+				.forEach(book -> out.println(book.toWrite()));
 			out.close();
 		}
 	    catch(IOException e) {

@@ -6,8 +6,6 @@ import br.com.icmc.trabalho03.book.Book;
 import br.com.icmc.trabalho03.user.User;
 
 public class BorrowRegister {
-	private static int IDBookset = 0;
-	private static int IDUserset = 0;
 	private int ID;
 	private Book book;
 	private User user;
@@ -16,20 +14,22 @@ public class BorrowRegister {
 	
 	//construtor chamado pelo User
 	
-	public BorrowRegister (Book book){
-		this.ID = IDBookset;
-		IDBookset++;
+	public BorrowRegister (int ID, Book book){		
+		this.ID = ID;		
 		this.book = book;
-		this.borrowIt = LibraryManager.systemDate;		
+		this.borrowIt = new Date(LibraryManager.systemDate.getTime());		
 	}
 	
 	//Construtor chamado pelo Book
 	
-	public BorrowRegister (User user){
-		this.ID = IDUserset;
-		IDUserset++;
+	public BorrowRegister (int ID, User user){		
+		this.ID = ID;		
 		this.user = user;
-		this.borrowIt = LibraryManager.systemDate;
+		this.borrowIt = new Date(LibraryManager.systemDate.getTime());
+	}
+	
+	public void setBorrowIt (Date borrowIt){
+		this.borrowIt = borrowIt;
 	}
 	
 	public void setReturnIt (Date returnIt){
@@ -54,5 +54,17 @@ public class BorrowRegister {
 	
 	public Date getReturnIt () {
 		return returnIt;
+	}
+	
+	public String toString(){
+		String csv = "";
+		
+		csv += this.ID + ":";
+		csv += this.user + ":";
+		csv += this.book + ":";
+		csv += this.borrowIt + ":";
+		csv += this.returnIt;
+		
+		return csv;
 	}
 }

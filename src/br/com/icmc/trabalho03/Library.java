@@ -1,5 +1,7 @@
 package br.com.icmc.trabalho03;
 
+import br.com.icmc.trabalho03.book.Book;
+import br.com.icmc.trabalho03.book.BookType;
 import br.com.icmc.trabalho03.user.User;
 import br.com.icmc.trabalho03.user.UserRelationship;
 import javafx.application.Application;
@@ -328,7 +330,8 @@ public class Library extends Application{
 		getHomePane().getChildren().addAll(auxVBox);		
 		
 		updateButton.setOnMouseClicked(event ->{
-			integrator.updateTime(year.getText()+"/"+month.getText()+"/"+day.getText());
+			String time = integrator.updateTime(year.getText()+"/"+month.getText()+"/"+day.getText());
+			systemTime.setText(time);
 		});
 	}
 
@@ -448,7 +451,7 @@ public class Library extends Application{
 		auxHBox = new HBox();
 		Label bookListLabel = new Label("Tipo de Livro: ");
 		ObservableList<String> typeBook = FXCollections.observableArrayList(
-				"texto", "geral");
+				"TextBook", "General");
 		ComboBox typeBookList = new ComboBox(typeBook);
 		auxHBox.getChildren().addAll(bookListLabel, typeBookList);		
 		auxVBox.getChildren().add(auxHBox);
@@ -459,7 +462,10 @@ public class Library extends Application{
 		getBookSignupPane().getChildren().add(auxVBox);		
 
 		sendBookSignUpButton.setOnMouseClicked(event ->{
-			
+			integrator.signUpBook(
+					bookName.getText(),
+					BookType.valueOf(typeBookList.getValue().toString())					
+				);
 		});
 
 	}
@@ -532,11 +538,14 @@ public class Library extends Application{
 		auxVBox.getChildren().add(auxHBox);
 		
 		Button searchUser = new Button ("Buscar Usuário");
-		auxVBox.getChildren().add(searchUser);
+		Label userData = new Label("usuario: ");
 		
-		ObservableList<String> userListBook = FXCollections.observableArrayList();
-		ListView<String> userBookListView = new ListView<String>(userListBook);			
+		auxVBox.getChildren().addAll(searchUser, userData);
+		
+		ObservableList<BorrowRegister> userListBook = FXCollections.observableArrayList();
+		ListView<BorrowRegister> userBookListView = new ListView<BorrowRegister>(userListBook);			
 		auxVBox.getChildren().add(userBookListView);
+		integrator.setUserBorrowList(userBookListView);
 		
 		hboxSide.getChildren().add(auxVBox);
 		
@@ -561,21 +570,17 @@ public class Library extends Application{
 		
 		auxHBox = new HBox();
 		Label bookSearchListLabel = new Label("Livros: ");
-		ObservableList<String> searchListBook = FXCollections.observableArrayList();
-		ListView<String> bookSearchList = new ListView<String>(searchListBook);
+		ObservableList<Book> searchListBook = FXCollections.observableArrayList();
+		ListView<Book> bookSearchList = new ListView<Book>(searchListBook);
 		auxHBox.getChildren().addAll(bookSearchListLabel, bookSearchList);		
 		auxVBox.getChildren().add(auxHBox);
 		
 		auxHBox = new HBox();
-		Label borrowBookId = new Label ("ID: ");
-		Label borrowBookName = new Label ("Name: ");
-		borrowBookId.setAlignment(Pos.CENTER);
-		borrowBookId.setTextFill(Color.GREEN);
-		borrowBookId.setFont(Font.font("Cambria", 16));
-		borrowBookName.setAlignment(Pos.CENTER);
-		borrowBookName.setTextFill(Color.GREEN);
-		borrowBookName.setFont(Font.font("Cambria", 16));
-		auxHBox.getChildren().addAll(borrowBookId, borrowBookName);
+		Label borrowBook = new Label ("Book: ");
+		borrowBook.setAlignment(Pos.CENTER);
+		borrowBook.setTextFill(Color.GREEN);
+		borrowBook.setFont(Font.font("Cambria", 16));
+		auxHBox.getChildren().add(borrowBook);
 		
 		Button bookBorrowButton = new Button ("Retirar");
 		auxHBox.getChildren().add(bookBorrowButton);
@@ -588,15 +593,30 @@ public class Library extends Application{
 
 
 		searchUser.setOnMouseClicked(event->{
-			integrator.showUserList();
+			User user = integrator.findUser(idUser.getText());
+			userData.setText("Usuário "+user);
+			ObservableList<BorrowRegister> list = integrator.getUserBorrowList(user);
+			userBookListView.setItems(list);
 		});
 		
 		bookSearchButton.setOnMouseClicked(event->{
-			
+			ObservableList<Book> list = integrator.findBook(
+					bookId.getText(),
+					bookNameSearch.getText()
+				);
+			bookSearchList.setItems(list);
+		});
+		
+		bookSearchList.setOnMouseClicked(event->{
+			Book book = bookSearchList.getSelectionModel().getSelectedItem();
+			borrowBook.setText("Book: "+book);			
 		});
 		
 		bookBorrowButton.setOnMouseClicked(event->{
-			
+			Book book = bookSearchList.getSelectionModel().getSelectedItem();
+			User user = integrator.findUser(idUser.getText());	
+			System.out.println("setOnMouse "+user);
+			integrator.borrowBook(user, book);
 		});
 		
 	}
@@ -623,7 +643,8 @@ public class Library extends Application{
 		auxVBox.getChildren().add(auxHBox);
 		
 		Button searchUser = new Button ("Buscar Usuário");
-		auxVBox.getChildren().add(searchUser);
+		Label foundUser = new Label("Usuário: ");
+		auxVBox.getChildren().addAll(searchUser, foundUser);
 		
 		ObservableList<BorrowRegister>  userListBook = FXCollections.observableArrayList();
 		ListView<BorrowRegister> userBookListView = new ListView<BorrowRegister>(userListBook);			
@@ -649,7 +670,9 @@ public class Library extends Application{
 		getReturnPane().getChildren().add(auxVBox);						
 
 		searchUser.setOnMouseClicked(event->{
-			integrator.showUserBorrowList();
+			User user = integrator.findUser(idUser.getText());
+			foundUser.setText("Usuário: "+user);
+			userBookListView.setItems(integrator.getUserBorrowList(user));
 		});
 		
 		bookReturnButton.setOnMouseClicked(event->{
@@ -787,7 +810,8 @@ public class Library extends Application{
 		getUserListPane().getChildren().add(auxVBox);
 		
 		searchUser.setOnMouseClicked(event->{
-			integrator.showUserList();
+			ObservableList<User> list = integrator.matchUser(idUser.getText());
+			userListView.setItems(list);
 		});
 	}
 
@@ -821,16 +845,20 @@ public class Library extends Application{
 		Button searchBook = new Button ("Buscar Livro");
 		auxVBox.getChildren().add(searchBook);
 		
-		ObservableList<String> bookList = FXCollections.observableArrayList();
-		ListView<String> bookListView = new ListView<String>(bookList);
+		ObservableList<Book> bookList = FXCollections.observableArrayList();
+		ListView<Book> bookListView = new ListView<Book>(bookList);
 		
 		auxVBox.getChildren().add(bookListView);
 		
 		getBookListPane().getChildren().add(auxVBox);
-
+		integrator.setBookList(bookListView);
 
 		searchBook.setOnMouseClicked(event->{
-			
+			ObservableList<Book> list = integrator.findBook(
+					idBook.getText(),
+					nameBook.getText()
+				);
+			bookListView.setItems(list);
 		});
 		
 	}
@@ -865,8 +893,8 @@ public class Library extends Application{
 		Button searchBook = new Button ("Buscar Livro");
 		auxVBox.getChildren().add(searchBook);
 		
-		ObservableList<String> bookList = FXCollections.observableArrayList();
-		ListView<String> bookListView = new ListView<String>(bookList);
+		ObservableList<Book> bookList = FXCollections.observableArrayList();
+		ListView<Book> bookListView = new ListView<Book>(bookList);
 		
 		auxVBox.getChildren().add(bookListView);
 		
@@ -874,7 +902,11 @@ public class Library extends Application{
 		
 		
 		searchBook.setOnMouseClicked(event->{
-			
+			ObservableList<Book> list = integrator.findBook(
+					idBorrowedBook.getText(),
+					nameBorrowedBook.getText()
+				);
+			bookListView.setItems(list);
 		});
 	}
 	

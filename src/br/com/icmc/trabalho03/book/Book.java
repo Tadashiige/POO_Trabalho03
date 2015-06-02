@@ -1,12 +1,15 @@
 package br.com.icmc.trabalho03.book;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.stream.Collectors;
 
 import br.com.icmc.trabalho03.BorrowRegister;
 import br.com.icmc.trabalho03.LibraryManager;
 import br.com.icmc.trabalho03.user.User;
 
 public class Book {
+	public int borrowID = 0;
 	private int ID;
 	private BookType type;
 	private String name;	
@@ -18,7 +21,10 @@ public class Book {
 		this.name = name;		
 	}
 	
-
+	public void setUserList (ArrayList<BorrowRegister> userList){
+		this.userList = userList;
+	}
+	
 	/**
 	 * Funções Get dos atributos ************************************************************
 	 * @return
@@ -36,22 +42,33 @@ public class Book {
 		return name;
 	}
 	
+	
+	
 	/**
 	 * --------------------------------------- END GETs ------------------------------------
 	 * @param book
 	 */
 	
 	public boolean canBeBorrowed (User user){
-		return true;
+		if(userList.size() == 0 || this.userList.get(userList.size()-1).getReturnIt() != null)
+			return true;
+		return false;
 	}
 	
 	public void borrowIt (User user) {
 
+		if(userList == null){
+			setUserList(new ArrayList<BorrowRegister>());
+		}
+		
 		//Caso o usuário esteja apto a retirar um livro registrar o usuário requisitante
 		
 		if(user.canBorrow(this)){
-			BorrowRegister newBorrow = new BorrowRegister(user);
-			userList.add(newBorrow);			
+						
+			borrowID++;
+			BorrowRegister newBorrow = new BorrowRegister(borrowID, user);
+			userList.add(newBorrow);
+			System.out.println("Book "+this+" "+userList);
 		}
 		
 		//Caso contrário avisar usuário a impossibilidade
@@ -76,5 +93,27 @@ public class Book {
 		else {
 			//TODO PopUp message "Error: It's Can't return book already returned"
 		}
+	}
+	
+	public String toString(){
+		String csvFormat = "";
+		
+		csvFormat += this.ID + ",";
+		csvFormat += this.type + ",";
+		csvFormat += this.name;	
+		
+		return csvFormat;
+	}
+	
+	public String toWrite(){
+		String csvFormat = toString();
+		
+		
+		csvFormat += userList
+				.stream()
+				.map(borrow -> borrow.toString())
+				.collect(Collectors.joining(";"));
+		
+		return csvFormat;
 	}
 }
