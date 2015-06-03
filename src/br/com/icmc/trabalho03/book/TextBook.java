@@ -12,7 +12,7 @@ public class TextBook extends Book {
 	public boolean canBeBorrowed (User user){
 		Boolean bool = super.canBeBorrowed(user);
 		if(user.getClass() != Community.class)
-			return true&&bool;
+			return bool;
 		
 		return false;
 	}

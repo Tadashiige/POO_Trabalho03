@@ -3,6 +3,8 @@ package br.com.icmc.trabalho03;
 import java.util.ArrayList;
 import java.util.Date;
 
+import BorrowRegister.BorrowManager;
+import BorrowRegister.BorrowRegister;
 import br.com.icmc.trabalho03.book.Book;
 import br.com.icmc.trabalho03.book.BookManager;
 import br.com.icmc.trabalho03.book.BookType;
@@ -12,10 +14,12 @@ import br.com.icmc.trabalho03.user.UserRelationship;
 
 public class LibraryManager{
 	public static Date systemDate = new Date();
+	private BorrowManager borrowManager;
 	private UserManager userManager;
 	private BookManager bookManager;
 	
 	public LibraryManager (){
+		this.borrowManager = new BorrowManager();
 		this.userManager = new UserManager();
 		this.bookManager = new BookManager();
 	}
@@ -39,6 +43,10 @@ public class LibraryManager{
 	public ArrayList<Book> matchBookName (String name){
 		return bookManager.matchBookName(name);
 	}
+
+	public ArrayList<User> matchUser (String doc){
+		return userManager.matchUser(doc);
+	}
 	
 	public String timeSetup (String time){
 		Date newDate = new Date(time);
@@ -50,10 +58,6 @@ public class LibraryManager{
 			(newDate.getYear()+1900);
 	}
 	
-	public ArrayList<User> matchUser (String doc){
-		return userManager.matchUser(doc);
-	}
-	
 	public void userSignup (UserRelationship type, String name, int document){
 		userManager.signupUser(type, name, document);
 	}
@@ -62,20 +66,28 @@ public class LibraryManager{
 		bookManager.signupBook(type, name);
 	}
 	
-	public void userBorrow (User user, Book book){
-		userManager.borrowUser(user.getID(), book);
-		bookManager.borrowIt(book.getID(), user);
+	public void borrowBook (User user, Book book){
+		boolean process = userManager.borrowUser(user.getID(), book);
+		System.out.println(process);
+		if(process == true){
+			bookManager.borrowIt(book.getID());
+			borrowManager.registNewBorrow(user.borrowID, user.getID(), book.getID());
+		}
 	}
 	
-	public void userReturn (int userID, int bookID){
-		userManager.returnUser(userID, bookID);
+	public void returnBook (User user, Book book){
+		boolean process  = false;
+		process = userManager.returnUser(user.getID());
+		process = process && bookManager.returnIt(book.getID());
+		if(process == true)
+			borrowManager.registReturn(user.getID(), book.getID());
 	}
 	
-	public void bookReturn (int ID){
-		bookManager.returnIt(ID);
+	public ArrayList<BorrowRegister> getBorrowUserList (User user){		
+		return borrowManager.getBorrowUserId(Integer.toString(user.getID()));
 	}
 	
-	public void userSuspension (){
+	public void userSuspension (int ID){
 		userManager.userSuspensionCalculation();
 	}
 	
@@ -88,7 +100,10 @@ public class LibraryManager{
 	}
 	
 	public ArrayList<Book> borrowedList (){
-		return bookManager.getBorrowedList ();
+		return bookManager.getBorrowList ();
 	}
 
+	public ArrayList<Book> borrowedList (String bookID, String bookName){
+		return bookManager.getBorrowList (bookID, bookName);
+	}
 }

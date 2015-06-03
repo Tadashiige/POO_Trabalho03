@@ -1,4 +1,4 @@
-package br.com.icmc.trabalho03.user;
+package BorrowRegister;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -8,30 +8,30 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class UserFile {
-	final static private String fileName = "userData.csv";
+public class BorrowFile {
+final static private String fileName = "borrowData.csv";
 	
-	public UserFile(){		
+	public BorrowFile(){		
 	}
 	
 	
-	private static ArrayList<User> readFile (BufferedReader in){		
+	private static ArrayList<BorrowRegister> readFile (BufferedReader in){		
 		
-		ArrayList<User> userList = new ArrayList<User>();
+		ArrayList<BorrowRegister> bookList = new ArrayList<BorrowRegister>();
     	String csv;
         try {
 			while((csv = in.readLine()) != null) {
-			    userList.add(UserParser.parse(csv));
+			    bookList.add(BorrowParser.parse(csv));
 			}
 			in.close();
 		} catch (IOException e) {
 			System.out.println("Error reading the file!");
 		}
-        return userList;
+        return bookList;
 	}
 	
-	//le a coleção de usuários do arquivo
-	public static ArrayList<User> loadFile (){		
+	//le a coleção de book do arquivo
+	public static ArrayList<BorrowRegister> loadFile (){		
 		 
 		BufferedReader in = null;
 		
@@ -54,18 +54,18 @@ public class UserFile {
 	}
 	
 	
-	//salva coleção de usuários no arquivo
-	public static void writeFile (ArrayList<User> userList){
+	//salva coleção de book no arquivo
+	public static void writeFile (ArrayList<BorrowRegister> borrowList){
 		try {
 			PrintWriter out = new PrintWriter(new FileWriter(fileName));
-			userList
+			borrowList
 				.stream()
-				.forEach(user -> out.println(user));
+				.forEach(borrow -> out.println(borrow));
 			out.close();
 		}
 	    catch(IOException e) {
 	        System.out.println("Error writing the file!");
 	    }
 	}
-   
+
 }

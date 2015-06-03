@@ -3,8 +3,6 @@ package br.com.icmc.trabalho03.user;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import br.com.icmc.trabalho03.BorrowParser;
-import br.com.icmc.trabalho03.BorrowRegister;
 import br.com.icmc.trabalho03.book.Book;
 
 public class UserManager {
@@ -58,20 +56,29 @@ public class UserManager {
 				//TODO popup message "Relationship type undefined";
 				System.out.println("Relationship type undefined");
 				return;
-		}
-		user.setBorrowList(new ArrayList<BorrowRegister>());
+		}		
 		userList.add(user);
 		UserFile.writeFile(userList);		
 	}
 	
-	public void borrowUser (int ID, Book book){
-		userList.get(ID-1).borrowBook(book);
-		UserFile.writeFile(userList);	
+	public boolean borrowUser (int ID, Book book){
+		boolean process = userList.get(ID-1).borrowBook(book);		
+
+		System.out.println("usuario locatario: "+ userList.get(ID-1));
+		
+		UserFile.writeFile(userList);
+		
+		return process;
 	}
 	
-	public void returnUser (int userID, int bookID){
-		userList.get(userID).returnBook(bookID);
-		UserFile.writeFile(userList);	
+	public boolean returnUser (int userID){
+		boolean process = userList.get(userID-1).returnBook();
+
+		System.out.println("usuario devolutor: "+ userList.get(ID-1));
+		
+		UserFile.writeFile(userList);
+		
+		return process;
 	}
 	
 	public void userSuspensionCalculation (){

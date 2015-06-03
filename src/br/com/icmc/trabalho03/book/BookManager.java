@@ -1,10 +1,9 @@
 package br.com.icmc.trabalho03.book;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import br.com.icmc.trabalho03.BorrowRegister;
-import br.com.icmc.trabalho03.user.User;
 
 public class BookManager {
 	/**
@@ -59,29 +58,59 @@ public class BookManager {
 				ID--;
 				//TODO popup message "Book type undefined";
 				return;
-		}
-		book.setUserList(new ArrayList<BorrowRegister>());
+		}		
 		bookList.add(book);
 		BookFile.writeFile(bookList);
 	}
 	
-	public void borrowIt (int ID, User user){
-		bookList.get(ID-1).borrowIt(user);
+	public boolean borrowIt (int ID){
+		boolean process = bookList.get(ID-1).setBorrow();
+		
+		System.out.println("livro emprestado: "+ bookList.get(ID-1));
+		
 		BookFile.writeFile(bookList);
+		
+		return process;
 	}
 	
-	public void returnIt (int bookID){
-		bookList.get(bookID).returnIt();
+	public boolean returnIt (int bookID){
+		boolean process = bookList.get(bookID).setReturn();
+
+		System.out.println("livro devolvido: "+ bookList.get(ID-1));
+				
 		BookFile.writeFile(bookList);
+		
+		return process;
 	}
 	
 	public ArrayList<Book> getBookList (){
 		return bookList;
 	}
 	
-	public ArrayList<Book> getBorrowedList (){
-		ArrayList<Book> borrowList = new ArrayList<Book>();
+	public ArrayList<Book> getBorrowList(){
 		
-		return borrowList;
+		return new ArrayList<Book> (bookList
+				.stream()
+				.filter(book -> book.isBorrowed() == true)
+				.collect(Collectors.toList())
+			);
+		
+	}
+
+	public ArrayList<Book> getBorrowList(String bookID, String bookName){
+		Set<Book> list = new HashSet<Book>();
+		
+		list.addAll(matchBookId(bookID));
+		list.addAll(matchBookId(bookName));
+		
+		if(list.isEmpty())
+			list.addAll(bookList);
+		
+		return new ArrayList<Book> (list
+				.stream()
+				.filter(book -> book.isBorrowed() == true)
+				.collect(Collectors.toList())
+			);
+		
 	}
 }

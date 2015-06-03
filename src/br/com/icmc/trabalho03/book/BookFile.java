@@ -21,7 +21,7 @@ public class BookFile {
     	String csv;
         try {
 			while((csv = in.readLine()) != null) {
-			    bookList.add(BookParser.parse(csv, "parse"));
+			    bookList.add(BookParser.parse(csv));
 			}
 			in.close();
 		} catch (IOException e) {
@@ -60,7 +60,7 @@ public class BookFile {
 			PrintWriter out = new PrintWriter(new FileWriter(fileName));
 			bookList
 				.stream()
-				.forEach(book -> out.println(book.toWrite()));
+				.forEach(book -> out.println(book));
 			out.close();
 		}
 	    catch(IOException e) {

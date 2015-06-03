@@ -4,131 +4,31 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import BorrowRegister.BorrowRegister;
 import br.com.icmc.trabalho03.book.Book;
 import br.com.icmc.trabalho03.book.BookType;
 import br.com.icmc.trabalho03.user.User;
 import br.com.icmc.trabalho03.user.UserRelationship;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 
 public class GuiLibraryIntegrator {
-	private LibraryManager manager;	
-	
-	/* ********************************************************************
-	 * Campos do gui
-	 */
-	
-	private Label actualTime = null;	
-	
-	private ListView<BorrowRegister> userBorrowList = null;
-	private ListView<BorrowRegister> bookBorrowList = null;
-	
-	private ListView<BorrowRegister> userReturnList = null;
-	
-	private ListView<BorrowRegister> userSuspensionList = null;
-	
-	private ListView<User> userList = null;
-	private ListView<Book> bookList = null;
-	private ListView<BorrowRegister> borrowList = null;
-	
-	/*
-	 * ----------------- END GUI FIELDS ----------------------------------- 
-	 * 
-	 */
+	private LibraryManager manager;		
 	
 	public GuiLibraryIntegrator(LibraryManager manager){
 		this.manager = manager;		
 	}
-	
-	/**
-	 * Sets propertys dos atributos *********************************************
-	 */
-	
-	public void setActualTime (Label time){
-		this.actualTime = time;
-	}	
-	
-	public void setUserBorrowList(ListView<BorrowRegister> list){
-		this.userBorrowList = list;
-	}
-	
-	public void setBookBorrowList(ListView<BorrowRegister> list){
-		this.bookBorrowList = list;
-	}
-	
-	public void setUserReturnList(ListView<BorrowRegister> list){
-		this.userReturnList = list;
-	}
-	
-	public void setUserSuspensionList(ListView<BorrowRegister> list){
-		this.userSuspensionList = list;
-	}
-	
-	public void setUserList(ListView<User> list){
-		this.userList = list;
-	}
-	public void setBookList(ListView<Book> list){
-		this.bookList = list;
-	}
-	public void setBorrowList(ListView<BorrowRegister> list){
-		this.borrowList = list;
-	}	
-	
-	/**
-	 * ----------------- END SETS -----------------------------------------------
-	 */
-
-	/**
-	 * Gets propertys dos atributos *********************************************
-	 */
-	
-	public Label getActualTime (){
-		return this.actualTime;
-	}	
-	
-	public ListView<BorrowRegister> getUserBorrowList(){
-		return this.userBorrowList;
-	}
-	
-	public ListView<BorrowRegister> getUookBorrowList(){
-		return this.bookBorrowList;
-	}
-	
-	public ListView<BorrowRegister> getUserReturnList(){
-		return this.userReturnList;
-	}
-	
-	public ListView<BorrowRegister> getUserSuspensionList(){
-		return this.userSuspensionList;
-	}
-	
-	public ListView<User> getUserList(){
-		return this.userList;
-	}
-	public ListView<Book> getBookList(){
-		return this.bookList;
-	}
-	public ListView<BorrowRegister> getBorrowList(){
-		return this.borrowList;
-	}	
-	
-	/**
-	 * ----------------- END SETS -----------------------------------------------
-	 */
-	
+		
 	public User findUser (String doc){		
 		return manager.findUser(doc);				
 	}
 
 	public ObservableList<BorrowRegister> getUserBorrowList (User user){
-		ArrayList<BorrowRegister> list;
-		System.out.println("user: "+user + user.getBorrowList());
-		if(user != null)
-			list = user.getBorrowList();
-		else
+		ArrayList<BorrowRegister> list = manager.getBorrowUserList(user);
+		
+		if(list.isEmpty())
 			list = new ArrayList<BorrowRegister>();
+		
 		return FXCollections.observableArrayList(list);
 	}
 	
@@ -170,7 +70,7 @@ public class GuiLibraryIntegrator {
 	
 
 	public void borrowBook (User user, Book book){
-		manager.userBorrow(user, book);
+		manager.borrowBook(user, book);
 	}
 	
 	public ObservableList<User> showUserList (){		
@@ -185,8 +85,8 @@ public class GuiLibraryIntegrator {
 		return FXCollections.observableArrayList(list);
 	}
 	
-	public ObservableList<Book> showBorrowList (){
-		ArrayList<Book> list = manager.borrowedList();
+	public ObservableList<Book> showBorrowList (String bookID, String bookName){
+		ArrayList<Book> list = manager.borrowedList(bookID, bookName);				
 		
 		return FXCollections.observableArrayList(list);
 	}
