@@ -543,8 +543,8 @@ public class Library extends Application{
 		
 		auxVBox.getChildren().addAll(searchUser, userData);
 		
-		ObservableList<BorrowRegister> userListBook = FXCollections.observableArrayList();
-		ListView<BorrowRegister> userBookListView = new ListView<BorrowRegister>(userListBook);			
+		ObservableList<Book> userListBook = FXCollections.observableArrayList();
+		ListView<Book> userBookListView = new ListView<Book>(userListBook);			
 		auxVBox.getChildren().add(userBookListView);
 		
 		hboxSide.getChildren().add(auxVBox);
@@ -595,7 +595,7 @@ public class Library extends Application{
 		searchUser.setOnMouseClicked(event->{
 			User user = integrator.findUser(idUser.getText());
 			userData.setText("Usuário "+user);
-			ObservableList<BorrowRegister> list = integrator.getUserBorrowList(user);
+			ObservableList<Book> list = integrator.getBorrowBookUserList(user);
 			userBookListView.setItems(list);
 		});
 		
@@ -616,7 +616,10 @@ public class Library extends Application{
 			Book book = bookSearchList.getSelectionModel().getSelectedItem();
 			User user = integrator.findUser(idUser.getText());	
 		
-			integrator.borrowBook(user, book);
+			String msg = "";
+			boolean process = integrator.borrowBook(user, book);
+			msg = (process == true)?"Livro retirado com sucesso":"Requisição Negada";
+			borrowBook.setText(msg);
 		});
 		
 	}
@@ -679,7 +682,11 @@ public class Library extends Application{
 		bookReturnButton.setOnMouseClicked(event->{
 			User user = integrator.findUser(idUser.getText());
 			Book book = userBookListView.getSelectionModel().getSelectedItem();
-			integrator.returnBook(user, book);
+			
+			String msg="";
+			boolean process = integrator.returnBook(user, book);
+			msg = (process == true)?"Livro devolvido com sucesso":"Falha na devolução";
+			borrowBook.setText(msg);
 		});
 		
 	}

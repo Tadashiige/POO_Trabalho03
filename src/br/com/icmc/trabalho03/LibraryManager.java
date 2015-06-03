@@ -68,19 +68,24 @@ public class LibraryManager{
 		bookManager.signupBook(type, name);
 	}
 	
-	public void borrowBook (User user, Book book){
+	public boolean borrowBook (User user, Book book){
 		boolean process = userManager.borrowUser(user.getID(), book);
 		if(process == true){
 			bookManager.borrowIt(book.getID());
 			borrowManager.registNewBorrow(user.borrowID, user.getID(), book.getID());
+			return true;
 		}
+		return false;
 	}
 	
-	public void returnBook (User user, Book book){
+	public boolean returnBook (User user, Book book){
 		boolean process = userManager.returnUser(user.getID());
 		process = process && bookManager.returnIt(book.getID());
-		if(process == true)
+		if(process == true){
 			borrowManager.registReturn(user.getID(), book.getID());
+			return true;
+		}
+		return false;
 	}
 	
 	public ArrayList<BorrowRegister> getBorrowUserList (User user){		

@@ -75,12 +75,12 @@ public class GuiLibraryIntegrator {
 
 	
 
-	public void borrowBook (User user, Book book){
-		manager.borrowBook(user, book);
+	public boolean borrowBook (User user, Book book){
+		return manager.borrowBook(user, book);
 	}
 	
-	public void returnBook (User user, Book book){
-		manager.returnBook(user, book);
+	public boolean returnBook (User user, Book book){
+		return manager.returnBook(user, book);
 	}
 	
 	public ObservableList<User> showUserList (){		

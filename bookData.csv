@@ -1,6 +1,7 @@
-1,General,Chuva,false
-2,General,Flor,true
-3,TextBook,Guidorriz,true
+1,General,Chuva,true
+2,General,Flor,false
+3,TextBook,Guidorriz,false
 4,TextBook,C Completo e Total,false
-5,TextBook,Stuwart,true
-6,General,Gato de Botas,true
+5,TextBook,Stuwart,false
+6,General,Gato de Botas,false
+7,TextBook,Travesseiro,false
