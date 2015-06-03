@@ -2,6 +2,8 @@ package br.com.icmc.trabalho03;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import BorrowRegister.BorrowManager;
 import BorrowRegister.BorrowRegister;
@@ -68,7 +70,6 @@ public class LibraryManager{
 	
 	public void borrowBook (User user, Book book){
 		boolean process = userManager.borrowUser(user.getID(), book);
-		System.out.println(process);
 		if(process == true){
 			bookManager.borrowIt(book.getID());
 			borrowManager.registNewBorrow(user.borrowID, user.getID(), book.getID());
@@ -76,8 +77,7 @@ public class LibraryManager{
 	}
 	
 	public void returnBook (User user, Book book){
-		boolean process  = false;
-		process = userManager.returnUser(user.getID());
+		boolean process = userManager.returnUser(user.getID());
 		process = process && bookManager.returnIt(book.getID());
 		if(process == true)
 			borrowManager.registReturn(user.getID(), book.getID());
@@ -85,6 +85,25 @@ public class LibraryManager{
 	
 	public ArrayList<BorrowRegister> getBorrowUserList (User user){		
 		return borrowManager.getBorrowUserId(Integer.toString(user.getID()));
+	}
+	
+	public ArrayList<Book> getBorrowBookUserList (User user){
+		ArrayList<Book> books = getBookList();
+		ArrayList<BorrowRegister> list = getBorrowUserList(user);
+		ArrayList<Book> bookList = new ArrayList<Book>();
+		
+		Iterator<BorrowRegister> it = list.iterator();		
+		while(it.hasNext()){
+			int aux = it.next().getBook();
+			bookList.addAll(books
+					.stream()
+					.filter(book -> book.getID() == aux)
+					.limit(1)
+					.collect(Collectors.toList())
+				);
+		}
+		
+		return bookList;
 	}
 	
 	public void userSuspension (int ID){

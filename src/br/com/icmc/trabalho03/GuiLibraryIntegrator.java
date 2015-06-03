@@ -32,6 +32,12 @@ public class GuiLibraryIntegrator {
 		return FXCollections.observableArrayList(list);
 	}
 	
+	public ObservableList<Book> getBorrowBookUserList (User user){
+		ArrayList<Book> list = manager.getBorrowBookUserList(user);
+		
+		return FXCollections.observableArrayList(list);
+	}
+	
 	public ObservableList<User> matchUser (String doc){				
 		ArrayList<User> list = manager.matchUser(doc);		
 		
@@ -71,6 +77,10 @@ public class GuiLibraryIntegrator {
 
 	public void borrowBook (User user, Book book){
 		manager.borrowBook(user, book);
+	}
+	
+	public void returnBook (User user, Book book){
+		manager.returnBook(user, book);
 	}
 	
 	public ObservableList<User> showUserList (){		

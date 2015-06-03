@@ -63,8 +63,6 @@ public class UserManager {
 	
 	public boolean borrowUser (int ID, Book book){
 		boolean process = userList.get(ID-1).borrowBook(book);		
-
-		System.out.println("usuario locatario: "+ userList.get(ID-1));
 		
 		UserFile.writeFile(userList);
 		
@@ -73,8 +71,6 @@ public class UserManager {
 	
 	public boolean returnUser (int userID){
 		boolean process = userList.get(userID-1).returnBook();
-
-		System.out.println("usuario devolutor: "+ userList.get(ID-1));
 		
 		UserFile.writeFile(userList);
 		

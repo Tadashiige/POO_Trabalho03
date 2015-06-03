@@ -66,17 +66,13 @@ public class BookManager {
 	public boolean borrowIt (int ID){
 		boolean process = bookList.get(ID-1).setBorrow();
 		
-		System.out.println("livro emprestado: "+ bookList.get(ID-1));
-		
 		BookFile.writeFile(bookList);
 		
 		return process;
 	}
 	
 	public boolean returnIt (int bookID){
-		boolean process = bookList.get(bookID).setReturn();
-
-		System.out.println("livro devolvido: "+ bookList.get(ID-1));
+		boolean process = bookList.get(bookID-1).setReturn();
 				
 		BookFile.writeFile(bookList);
 		

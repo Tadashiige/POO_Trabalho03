@@ -646,20 +646,17 @@ public class Library extends Application{
 		Label foundUser = new Label("Usuário: ");
 		auxVBox.getChildren().addAll(searchUser, foundUser);
 		
-		ObservableList<BorrowRegister>  userListBook = FXCollections.observableArrayList();
-		ListView<BorrowRegister> userBookListView = new ListView<BorrowRegister>(userListBook);			
+		ObservableList<Book>  userListBook = FXCollections.observableArrayList();
+		ListView<Book> userBookListView = new ListView<Book>(userListBook);			
 		auxVBox.getChildren().add(userBookListView);
 		
 		auxHBox = new HBox();
-		Label borrowBookId = new Label ("ID: ");
-		Label borrowBookName = new Label ("Name: ");
-		borrowBookId.setAlignment(Pos.CENTER);
-		borrowBookId.setTextFill(Color.GREEN);
-		borrowBookId.setFont(Font.font("Cambria", 16));
-		borrowBookName.setAlignment(Pos.CENTER);
-		borrowBookName.setTextFill(Color.GREEN);
-		borrowBookName.setFont(Font.font("Cambria", 16));
-		auxHBox.getChildren().addAll(borrowBookId, borrowBookName);
+		Label borrowBook = new Label ("BOOK: ");
+		borrowBook.setAlignment(Pos.CENTER);
+		borrowBook.setTextFill(Color.GREEN);
+		borrowBook.setFont(Font.font("Cambria", 16));
+
+		auxHBox.getChildren().add(borrowBook);
 		
 		Button bookReturnButton = new Button ("Devolver");
 		auxHBox.getChildren().add(bookReturnButton);
@@ -671,11 +668,18 @@ public class Library extends Application{
 		searchUser.setOnMouseClicked(event->{
 			User user = integrator.findUser(idUser.getText());
 			foundUser.setText("Usuário: "+user);
-			userBookListView.setItems(integrator.getUserBorrowList(user));
+			userBookListView.setItems(integrator.getBorrowBookUserList(user));
 		});
-		
+
+		userBookListView.setOnMouseClicked(event->{
+			Book book = userBookListView.getSelectionModel().getSelectedItem();
+			borrowBook.setText("Book: "+book);			
+		});
+					
 		bookReturnButton.setOnMouseClicked(event->{
-			
+			User user = integrator.findUser(idUser.getText());
+			Book book = userBookListView.getSelectionModel().getSelectedItem();
+			integrator.returnBook(user, book);
 		});
 		
 	}

@@ -102,7 +102,6 @@ public abstract class User {
 		//Caso não tenha excedido o limite de empréstimos registrar emprestimo
 		
 		if(canBorrow(book)){	
-			System.out.println("livro ta ocupado?: "+book);
 			borrowID++;				
 			borrowedBooks++;
 			return true;

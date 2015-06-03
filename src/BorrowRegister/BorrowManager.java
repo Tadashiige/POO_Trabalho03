@@ -20,7 +20,6 @@ public class BorrowManager {
 	}
 	
 	public void registNewBorrow (int ID, int bookID, int userID){
-		System.out.println("Registro ID "+ID+" efetuado: user "+userID+" book "+bookID);
 		
 		List<BorrowRegister> str = borrowList
 			.stream()
@@ -90,10 +89,9 @@ public class BorrowManager {
 		
 		if(ID.length() == 0)
 			return new ArrayList<BorrowRegister>();
-		System.out.println("busca list user: "+ID);
+
 		return new ArrayList<BorrowRegister> (borrowList
 				.stream()
-				.peek(book -> System.out.println("user regist: "+book.getUser()))
 				.filter(borrow -> 
 						Integer.toString(borrow.getUser()).equals(ID) &&
 						borrow.getReturnIt() == null)				

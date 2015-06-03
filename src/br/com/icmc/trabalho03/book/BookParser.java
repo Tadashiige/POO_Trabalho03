@@ -11,8 +11,6 @@ public class BookParser {
 		
 		boolean borrowed = (csvSplit[3].equals("true"))?true:false;
 		
-		System.out.println(borrowed + csvSplit[3]);
-		
 		Book book;
 		
 		switch(type){
